@@ -1,0 +1,120 @@
+
+<!DOCTYPE html>
+<html>
+    <head>
+    <style>
+        body{
+         text-align:center;  
+         background-color: azure;   
+        }
+    
+    </style>
+   </head> 
+<body>
+    
+            <!-- adds a new account to database -->
+    <?php
+define("DB_SERVER", "localhost");
+define("DB_USER", "your_name");
+define("DB_PASS", "your_pass");
+define("DB_NAME", "your_db");
+define("TBL_USERS", "users_table_name");
+
+$connection = mysql_connect(DB_SERVER, DB_USER, DB_PASS) or die(mysql_error());
+mysql_select_db(DB_NAME, $connection) or die(mysql_error());
+
+...
+
+function addNewUser($username, $password){
+   global $connection;
+   $password = md5($password);
+   $q = "INSERT INTO ".TBL_USERS." VALUES ('$username', '$password')";
+   return mysql_query($q, $connection);
+}
+?> 
+       <!-- validates a given username/password pair -->
+        <?php
+function checkUserPass($username, $password){
+   global $connection;
+      
+   $username = str_replace("'","''",$username)
+   $password = md5($password);
+
+   // Verify that user is in database
+   $q = "SELECT password FROM ".TBL_USERS." WHERE username = '$username'";
+   $result = mysql_query($q, $connection);
+   if(!$result || (mysql_numrows($result) < 1)){
+     return 1; //Indicates username failure
+   }      
+   
+   // Retrieve password from result
+   $dbarray = mysql_fetch_array($result);
+   
+   // Validate that password is correct
+   if($password == $dbarray['password']){
+      return 0; //Success! Username and password confirmed
+   }
+   else{
+      return 1; //Indicates password failure
+   }
+}
+?>
+    
+<!--add title-->
+    
+<header class="bar bar-nav">
+  <h1 class="title">Register Here!</h1>
+</header>
+
+<!-- log in info -->
+    <form class="input-group">
+  <div class="input-row">
+    <label>Full Name</label>
+    <input type="text" placeholder="Name">
+  </div>
+  <div class="input-row">
+    <label>Email</label>
+    <input type="email" placeholder="Email">
+  </div>
+  <div class="input-row">
+    <label>Username</label>
+    <input type="text" placeholder="ShareEvents">
+  </div>
+       
+        <div class="input-row">
+    <label>Password</label>
+    <input type="password" placeholder="include 6 characters">
+  </div>
+        
+           <div class="input-row">
+    <label>Confirm Password</label>
+    <input type="password" placeholder="re-enter password">
+  </div>
+        
+</form>
+  
+    <button class="btn"> <a href= "home.html">Create An Account</a></button>
+    <br> 
+     <button class="btn"> <a href= "login.html">Log In</a></button>
+  
+    
+<!-- navigation bar 
+    <nav class="bar bar-tab">
+  <a class="tab-item active" href="#">
+    Home
+  </a>
+  <a class="tab-item" href="#">
+    Friends
+  </a>
+  <a class="tab-item" href="#">
+    My Account
+  </a>
+</nav>
+    -->
+    
+</body>
+
+
+
+
+</html>
